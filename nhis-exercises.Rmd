@@ -6,17 +6,15 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
+library(dplyr)
+library(janitor)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-### Processing NHIS data from IPUMS
-IPUMS has a unique way of packaging data. This code snippet shows how to read a downloaded dataset.
+### Load the prepared NHIS sample
 
 ```{r, eval = FALSE}
-if (!require("ipumsr")) stop("Reading IPUMS data into R requires the ipumsr package. It can be installed using the following command: install.packages('ipumsr')")
-
-ddi <- read_ipums_ddi("nhis_00007.xml")
-data <- read_ipums_micro(ddi)
+load("nhis-covid.Rdata")
 ```
 
 For our class, we will only select a few variables. I have prepared a dataset that we'll be using. The code below shows the steps involved.
@@ -138,3 +136,38 @@ CVDSYMP             Severity of coronavirus symptoms at their worst
 9                   Unknown-don't know
 
 ```
+### Exercise
+- Got to the IPUMS Health Surveys web site - https://healthsurveys.ipums.org/
+- Choose Get Data under National Health Interview Surveys
+- On the next page, look for Create an Extract and click Get Data
+- Using the menus under Select Variables to find the variable  CVDSYMP
+
+### Run tabulation on COVID symptom response
+```{r}
+t1 <- nhis %>%
+  filter(YEAR == 2020) %>%
+  tabyl(CVDSYMP)
+
+t1
+```
+
+```{r}
+t1 %>%
+  adorn_totals("row") %>%
+  adorn_pct_formatting()
+
+```
+
+```{r}
+t2 <- nhis %>%
+  filter(YEAR == 2020) %>%
+  tabyl(REGION, CVDSYMP) 
+t2
+```
+
+```{r}
+t2 %>%
+  adorn_percentages("row") %>%
+  adorn_pct_formatting(digits = 2)
+```
+
