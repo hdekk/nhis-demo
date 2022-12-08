@@ -1,0 +1,140 @@
+---
+title: "Intorduction to tabyls with NHIS data"
+author: "Harrison Dekker"
+date: '2022-04-07'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Processing NHIS data from IPUMS
+IPUMS has a unique way of packaging data. This code snippet shows how to read a downloaded dataset.
+
+```{r, eval = FALSE}
+if (!require("ipumsr")) stop("Reading IPUMS data into R requires the ipumsr package. It can be installed using the following command: install.packages('ipumsr')")
+
+ddi <- read_ipums_ddi("nhis_00007.xml")
+data <- read_ipums_micro(ddi)
+```
+
+For our class, we will only select a few variables. I have prepared a dataset that we'll be using. The code below shows the steps involved.
+
+```{r, eval=FALSE}
+nhis <- df %>%
+  mutate(REGION = as_factor(REGION),
+         SEX = as_factor(SEX),
+         EDUC = as_factor(EDUC),
+         HEALTH = as_factor(HEALTH),
+         HINOTCOVE = as_factor(HINOTCOVE),
+         DEPFEELEVL = as_factor(DEPFEELEVL),
+         CVDSYMP = as_factor(CVDSYMP)
+  ) %>%
+  select(YEAR, REGION, AGE, SEX, EDUC, HEALTH, HINOTCOVE, DEPFEELEVL, CVDSYMP, PERWEIGHT)
+
+save(nhis, file="nhis-example.Rdata")
+```
+
+The data file `nhis-example.Rdata` is available on Brightspace. Download it now, then
+create a new project in RStudio and load it as follows:
+
+```{r}
+load("original-data/nhis-example.Rdata")
+View(nhis)
+```
+
+```
+Codebook
+YEAR                Year os survey
+
+REGION              Region of residence
+01                  Northeast
+02                  North Central/Midwest
+03                  South
+04                  West
+08                  NO DATA IN ROUND
+09                  Unknown
+
+SEX                 Sex
+1                   Male
+2                   Female
+7                   Unknown-refused
+8                   Unknown-not ascertained
+9                   Unknown-don't know
+
+EDUC                Educational attainment
+000                 NIU
+100                 Grade 12 or less, no high school diploma or equivalent
+101                 Grade 8 or less (no further detail)
+102                 Never attended/kindergarten only
+103                 Grades 1-11 (no further detail)
+104                 Grade 1
+105                 Grade 2
+106                 Grade 3
+107                 Grade 4
+108                 Grade 5
+109                 Grade 6
+110                 Grade 7
+111                 Grade 8
+112                 Grade 9-12, no diploma (no further detail)
+113                 Grade 9
+114                 Grade 10
+115                 Grade 11
+116                 12th grade, no diploma
+200                 High school diploma or GED
+201                 High school graduate
+202                 GED or equivalent
+300                 Some college, no 4yr degree
+301                 Some college, no degree
+302                 AA degree: technical/vocational/occupational
+303                 AA degree: academic program
+400                 Bachelor's degree (BA,AB,BS,BBA)
+500                 Master's, Professional, or Doctoral Degree
+501                 Master's degree (MA,MS,Med,MBA)
+502                 Professional (MD,DDS,DVM,JD)
+503                 Doctoral degree (PhD, EdD)
+504                 Other degree
+996                 No degree, years of education unknown
+997                 Unknown--refused
+998                 Unknown--not ascertained
+999                 Unknown--don't know
+
+HEALTH              Health status
+1                   Excellent
+2                   Very Good
+3                   Good
+4                   Fair
+5                   Poor
+7                   Unknown-refused
+8                   Unknown-not ascertained
+9                   Unknown-don't know
+
+HINOTCOVE           Health Insurance coverage status
+0                   NIU
+1                   No, has coverage
+2                   Yes, has no coverage
+7                   Unknown-refused
+8                   Unknown-not ascertained
+9                   Unknown-don't know
+
+DEPFEELEVL          Level of depression, last time depressed
+0                   NIU
+1                   A little
+2                   A lot
+3                   Somewhere between little and lot
+7                   Unknown-refused
+8                   Unknown-not ascertained
+9                   Unknown-don't know
+
+CVDSYMP             Severity of coronavirus symptoms at their worst
+0                   NIU
+1                   No symptoms
+2                   Mild symptoms
+3                   Moderate symptoms
+4                   Severe symptoms
+7                   Unknown-refused
+8                   Unknown-not ascertained
+9                   Unknown-don't know
+
+```
